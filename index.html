@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevPulse Quiz | Interactive Tech & Coding Challenge</title>
+  <meta name="description" content="Engage in an interactive tech quiz with single and multi-select questions, fill-in-the-blanks, true/false challenges, live timers, streak combos, and detailed review feedback.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient background lighting -->
+  <div class="ambient-glow-1" aria-hidden="true"></div>
+  <div class="ambient-glow-2" aria-hidden="true"></div>
+
+  <!-- Fullscreen celebration confetti canvas -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header" role="banner">
+      <div class="logo-group">
+        <div class="logo-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <h1>DevPulse Quiz</h1>
+        </div>
+        <span class="logo-badge">SCT-WD-3</span>
+      </div>
+
+      <nav class="header-actions" aria-label="Quick Controls">
+        <button id="sound-toggle-btn" class="icon-btn" title="Toggle Sound Effects" aria-label="Toggle Sound Effects">
+          <svg id="sound-icon-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <svg id="sound-icon-off" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <button id="leaderboard-btn" class="icon-btn" title="View High Scores" aria-label="View High Scores">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+            <path d="M4 22h16"></path>
+            <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-2.34"></path>
+            <path d="M18 14.66V17c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-2.34"></path>
+            <path d="M6 4h12v7a6 6 0 0 1-12 0V4z"></path>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Content Views -->
+    <main role="main">
+      <!-- 1. SETUP / WELCOME VIEW -->
+      <section id="setup-view" class="view-section active glass-card" aria-label="Quiz Configuration">
+        <div class="hero-header">
+          <div class="hero-pill">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            Interactive Quiz Challenge
+          </div>
+          <h2 class="hero-title">Test Your <span>Developer IQ</span></h2>
+          <p class="hero-subtitle">Put your tech knowledge to the test with multiple question formats, live timers, streak combos, and in-depth explanations.</p>
+        </div>
+
+        <!-- Configuration 1: Category -->
+        <div class="config-group">
+          <div class="config-label">
+            <span>Select Domain</span>
+            <span class="info-tag">Topic</span>
+          </div>
+          <div class="config-options-grid" id="category-selector" role="radiogroup" aria-label="Category Selection">
+            <div class="option-chip selected" data-value="all" tabindex="0" role="radio" aria-checked="true">
+              <span class="chip-icon">🌐</span>
+              <span class="chip-name">All Topics</span>
+              <span class="chip-desc">Full spectrum</span>
+            </div>
+            <div class="option-chip" data-value="web-dev" tabindex="0" role="radio" aria-checked="false">
+              <span class="chip-icon">⚡</span>
+              <span class="chip-name">Web Dev</span>
+              <span class="chip-desc">HTML, CSS, JS</span>
+            </div>
+            <div class="option-chip" data-value="cs-logic" tabindex="0" role="radio" aria-checked="false">
+              <span class="chip-icon">🧠</span>
+              <span class="chip-name">CS & Logic</span>
+              <span class="chip-desc">DSA, Git, Networks</span>
+            </div>
+            <div class="option-chip" data-value="tech-ai" tabindex="0" role="radio" aria-checked="false">
+              <span class="chip-icon">🤖</span>
+              <span class="chip-name">Tech & AI</span>
+              <span class="chip-desc">Cloud, DBs, LLMs</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration 2: Difficulty -->
+        <div class="config-group">
+          <div class="config-label">
+            <span>Difficulty Tier</span>
+            <span class="info-tag">Challenge</span>
+          </div>
+          <div class="config-options-grid" id="difficulty-selector" role="radiogroup" aria-label="Difficulty Selection">
+            <div class="option-chip selected" data-value="all" tabindex="0" role="radio" aria-checked="true">
+              <span class="chip-icon">✨</span>
+              <span class="chip-name">Adaptive</span>
+              <span class="chip-desc">Mixed levels</span>
+            </div>
+            <div class="option-chip" data-value="easy" tabindex="0" role="radio" aria-checked="false">
+              <span class="chip-icon">🌱</span>
+              <span class="chip-name">Beginner</span>
+              <span class="chip-desc">Core fundamentals</span>
+            </div>
+            <div class="option-chip" data-value="medium" tabindex="0" role="radio" aria-checked="false">
+              <span class="chip-icon">🔥</span>
+              <span class="chip-name">Intermediate</span>
+              <span class="chip-desc">Applied concepts</span>
+            </div>
+            <div class="option-chip" data-value="hard" tabindex="0" role="radio" aria-checked="false">
+              <span class="chip-icon">⚡</span>
+              <span class="chip-name">Advanced</span>
+              <span class="chip-desc">Deep mechanics</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Configuration 3: Question Count & Timer Mode -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          <div class="config-group" style="margin-bottom: 0;">
+            <div class="config-label"><span>Questions</span></div>
+            <div class="config-options-grid" id="count-selector" role="radiogroup" style="grid-template-columns: repeat(3, 1fr);">
+              <div class="option-chip" data-value="5" tabindex="0" role="radio" aria-checked="false">
+                <span class="chip-name">5 Qs</span>
+                <span class="chip-desc">Quick</span>
+              </div>
+              <div class="option-chip selected" data-value="8" tabindex="0" role="radio" aria-checked="true">
+                <span class="chip-name">8 Qs</span>
+                <span class="chip-desc">Standard</span>
+              </div>
+              <div class="option-chip" data-value="12" tabindex="0" role="radio" aria-checked="false">
+                <span class="chip-name">12 Qs</span>
+                <span class="chip-desc">Deep Run</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="config-group" style="margin-bottom: 0;">
+            <div class="config-label"><span>Timer Mode</span></div>
+            <div class="config-options-grid" id="timer-selector" role="radiogroup" style="grid-template-columns: repeat(2, 1fr);">
+              <div class="option-chip selected" data-value="timed" tabindex="0" role="radio" aria-checked="true">
+                <span class="chip-icon">⏱️</span>
+                <span class="chip-name">15s Timer</span>
+              </div>
+              <div class="option-chip" data-value="relaxed" tabindex="0" role="radio" aria-checked="false">
+                <span class="chip-icon">☕</span>
+                <span class="chip-name">Relaxed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feature highlights row -->
+        <div class="features-badge-row">
+          <div class="feature-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            <span>Single & Multi-Select</span>
+          </div>
+          <div class="feature-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            <span>Fill-in & True/False</span>
+          </div>
+          <div class="feature-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            <span>Streak Multipliers</span>
+          </div>
+          <div class="feature-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Instant Explanations</span>
+          </div>
+        </div>
+
+        <!-- Launch Button -->
+        <button id="start-quiz-btn" class="btn-primary" type="button">
+          <span>Start Quiz Challenge</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </section>
+
+      <!-- 2. QUIZ GAMEPLAY VIEW -->
+      <section id="quiz-view" class="view-section glass-card" aria-label="Active Quiz">
+        <!-- Top Bar with Category, Difficulty, Streak and Timer -->
+        <div class="quiz-top-bar">
+          <div class="quiz-meta-left">
+            <span id="quiz-category-badge" class="category-tag">Web Dev</span>
+            <span id="quiz-difficulty-badge" class="difficulty-tag easy">Easy</span>
+          </div>
+
+          <div class="quiz-meta-right">
+            <!-- Streak Flame Combo Badge -->
+            <div id="streak-badge" class="streak-badge" title="Consecutive correct answer streak">
+              <span>🔥</span>
+              <span id="streak-counter">0</span> Streak
+            </div>
+
+            <!-- Countdown Timer Ring -->
+            <div id="timer-container" class="timer-container">
+              <svg class="timer-circle" viewBox="0 0 44 44">
+                <circle class="bg-circle" cx="22" cy="22" r="18"></circle>
+                <circle id="timer-circle-progress" class="progress-circle" cx="22" cy="22" r="18"></circle>
+              </svg>
+              <span id="timer-seconds" class="timer-text">15</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Track -->
+        <div class="progress-track" role="progressbar" aria-label="Quiz Progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div id="quiz-progress-fill" class="progress-fill"></div>
+        </div>
+
+        <!-- Question Info Bar -->
+        <div class="question-info-row">
+          <div class="question-counter">
+            Question <strong id="current-q-index">1</strong> of <strong id="total-q-count">10</strong>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <div id="question-type-badge" class="question-type-badge">Single Choice</div>
+            
+            <!-- Lifelines -->
+            <div class="lifelines-container">
+              <button id="lifeline-5050" class="lifeline-btn" title="Remove 2 incorrect choices (Single choice only)">
+                <span>✂️ 50:50</span>
+              </button>
+              <button id="lifeline-hint" class="lifeline-btn" title="Reveal helpful hint">
+                <span>💡 Hint</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Title Area -->
+        <div class="question-content">
+          <h2 id="question-title" class="question-title">Loading Question...</h2>
+          <div id="question-hint-box" class="question-hint-box" style="display: none;">
+            <span>💡</span>
+            <span id="question-hint-text">Hint goes here...</span>
+          </div>
+        </div>
+
+        <!-- Dynamic Options Container -->
+        <div id="options-container" class="options-list" role="group" aria-label="Question Options">
+          <!-- Dynamically injected based on question type -->
+        </div>
+
+        <!-- Explanation Card (Shown after answering) -->
+        <div id="explanation-box" class="explanation-card" style="display: none;">
+          <div class="explanation-header">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <span>Insight & Explanation</span>
+          </div>
+          <p id="explanation-text" class="explanation-text"></p>
+        </div>
+
+        <!-- Bottom Action Bar -->
+        <div class="quiz-actions">
+          <button id="quit-quiz-btn" class="btn-secondary" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Exit</span>
+          </button>
+
+          <button id="action-quiz-btn" class="btn-submit-action" type="button" disabled>
+            <span id="action-quiz-btn-text">Submit Answer</span>
+            <svg id="action-quiz-btn-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- 3. RESULTS & PERFORMANCE VIEW -->
+      <section id="results-view" class="view-section glass-card results-card" aria-label="Quiz Results">
+        <div class="results-badge-pill">
+          <span>🏆</span>
+          <span>Quiz Completed!</span>
+        </div>
+
+        <!-- Radial Gauge Indicator -->
+        <div class="score-circle-wrapper">
+          <svg class="score-svg" viewBox="0 0 160 160">
+            <defs>
+              <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#06b6d4" />
+                <stop offset="50%" stop-color="#6366f1" />
+                <stop offset="100%" stop-color="#ec4899" />
+              </linearGradient>
+            </defs>
+            <circle class="score-svg-bg" cx="80" cy="80" r="70"></circle>
+            <circle id="results-score-meter" class="score-svg-meter" cx="80" cy="80" r="70"></circle>
+          </svg>
+          <div class="score-inside-text">
+            <span id="results-percent-val" class="score-percent-val">0%</span>
+            <span class="score-percent-label">Accuracy</span>
+          </div>
+        </div>
+
+        <h2 id="performance-title" class="performance-title">Outstanding Performance!</h2>
+        <p id="performance-desc" class="performance-desc">You've mastered these concepts with great skill and speed.</p>
+
+        <!-- Stats Breakdown Grid -->
+        <div class="stats-grid">
+          <div class="stat-item">
+            <span class="stat-icon">🎯</span>
+            <span id="stat-total-score" class="stat-val">0</span>
+            <span class="stat-label">Total Points</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">✅</span>
+            <span id="stat-correct-count" class="stat-val" style="color: #34d399;">0</span>
+            <span class="stat-label">Correct</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">❌</span>
+            <span id="stat-wrong-count" class="stat-val" style="color: #fb7185;">0</span>
+            <span class="stat-label">Incorrect</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">🔥</span>
+            <span id="stat-max-streak" class="stat-val" style="color: #f59e0b;">0</span>
+            <span class="stat-label">Peak Streak</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-icon">⏱️</span>
+            <span id="stat-time-taken" class="stat-val">0s</span>
+            <span class="stat-label">Time Taken</span>
+          </div>
+        </div>
+
+        <!-- Results Actions -->
+        <div class="results-actions-row">
+          <button id="review-answers-btn" class="btn-secondary" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Review Answers</span>
+          </button>
+
+          <button id="restart-quiz-btn" class="btn-primary" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            <span>Play Again</span>
+          </button>
+
+          <button id="change-settings-btn" class="btn-secondary" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Change Settings</span>
+          </button>
+
+          <button id="share-score-btn" class="btn-secondary" type="button" title="Copy score card to clipboard">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="18" cy="5" r="3"></circle>
+              <circle cx="6" cy="12" r="3"></circle>
+              <circle cx="18" cy="19" r="3"></circle>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+            </svg>
+            <span>Share Score</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- 4. REVIEW SECTION -->
+      <section id="review-view" class="view-section glass-card" aria-label="Answer Review">
+        <div class="review-header">
+          <h2 class="review-title">Detailed Answer Review</h2>
+          <button id="back-to-results-btn" class="btn-secondary" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Back to Score</span>
+          </button>
+        </div>
+
+        <div id="review-list" class="review-list">
+          <!-- Injected dynamically -->
+        </div>
+
+        <button id="review-play-again-btn" class="btn-primary" type="button">
+          <span>Play Another Quiz</span>
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <!-- HIGH SCORES / LEADERBOARD MODAL -->
+  <div id="leaderboard-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="leaderboard-title">
+    <div class="modal-card">
+      <div class="modal-top">
+        <h3 id="leaderboard-title" class="modal-title">
+          <span>🏆</span> High Scores Hall of Fame
+        </h3>
+        <button id="close-leaderboard-btn" class="icon-btn" aria-label="Close high scores modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div id="leaderboard-list" class="leaderboard-list">
+        <!-- Injected dynamically from localStorage -->
+      </div>
+
+      <div style="display: flex; gap: 0.75rem;">
+        <button id="clear-leaderboard-btn" class="btn-secondary" style="flex: 1; font-size: 0.85rem;" type="button">
+          <span>Clear History</span>
+        </button>
+        <button id="close-modal-footer-btn" class="btn-primary" style="flex: 1; font-size: 0.85rem; padding: 0.75rem;" type="button">
+          <span>Done</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast-notice" class="toast-notice" role="status" aria-live="polite">
+    <span id="toast-icon">✨</span>
+    <span id="toast-message">Message</span>
+  </div>
+
+  <!-- Scripts -->
+  <script src="questions.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
